@@ -1,30 +1,7 @@
-# Flight Booking Service
+# Car Bazar Application
 
-This is a Flight Booking DApp designed to facilitate users in making flight reservations for their travel needs. Users can easily book flights for their desired destinations with this decentralized application.
+Introducing Car-Bazar, a dynamic TypeScript web application poised to transform car management and discovery. Our innovative project offers users the ability to effortlessly execute CRUD (Create, Read, Update, Delete) operations on cars, streamlining the entire process. Additionally, Car-Bazar goes beyond conventional platforms by delivering personalized car recommendations tailored to individual user preferences. Experience the future of car management with Car-Bazar, where efficiency meets personalization for an unparalleled user experience.
 
-# Features
-
-Easy Flight Booking: Users can easily search and book flights to various destinations.
-
-Flexible Payment Options: Users can pay for their flight reservations using cryptocurrencies or other supported payment methods.
-
-Real-time Availability: The application provides real-time updates on flight availability and schedules.
-
-Secure Transactions: The DApp ensures secure transactions using blockchain technology, providing users with peace of mind during payments.
-
-# Usage
-
-Search for Flights: Users can search for available flights by entering their departure and destination cities along with the desired dates.
-
-Select a Flight: After viewing the available flight options, users can select the desired flight based on their preferences.
-
-Book Flight: Users proceed to book the selected flight by providing necessary details such as passenger information and payment method.
-
-Confirm Reservation: Once the booking is confirmed, users will receive a confirmation of their flight reservation along with details such as booking reference and itinerary.
-
-Payment: Users make the payment for the flight reservation, including the reservation holding fee.
-
-Travel: Users can travel according to their booked itinerary.
 
 
 ## How to deploy canisters
