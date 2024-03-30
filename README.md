@@ -12,6 +12,14 @@ Introducing Car-Bazar, a dynamic TypeScript web application poised to transform 
     dfx start --background --clean
     ```
 
+    ```bash
+    npm install
+    ```
+
+    ```bash
+    npm install @dfinity/candid
+    ```
+
 - Deploy the Ledger Canister
 
     ```bash
