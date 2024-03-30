@@ -19,6 +19,9 @@ import {
   bool,
   Canister,
   init,
+  AzleText,
+  AzleNat64,
+  AzleResult,
 } from "azle";
 import {
   Ledger,
@@ -65,15 +68,15 @@ const ReservationStatus = Variant({
   Completed: text,
 });
 
-// const CarBooking = Record({
-//   carId: text,
-//   amount: nat64,
-//   noOfPersons: nat64,
-//   status: ReservationStatus,
-//   payer: Principal,
-//   paid_at_block: Opt(nat64),
-//   memo: nat64,
-// });
+const CarBooking = Record({
+  carId: text,
+  amount: nat64,
+  noOfCars: nat64,
+  status: ReservationStatus,
+  payer: Principal,
+  paid_at_block: Opt(nat64),
+  memo: nat64,
+});
 
 const Message = Variant({
   Booked: text,
@@ -86,6 +89,8 @@ const Message = Variant({
 });
 
 const carStorage = StableBTreeMap(0, text, Car);
+const persistedBookings = StableBTreeMap(1, Principal, CarBooking);
+const pendingBookings = StableBTreeMap(2, nat64, CarBooking);
 
 // fee to be charged upon room reservation and refunded after room is left
 let reservationFee: Opt<nat64> = None;
@@ -107,6 +112,16 @@ export default Canister({
   // return cars reservation fee
   getCars: query([], Vec(Car), () => {
     return carStorage.values();
+  }),
+
+  // return booking
+  getCarBookings: query([], Vec(CarBooking), () => {
+    return persistedBookings.values();
+  }),
+
+  // return pending orders
+  getPendings: query([], Vec(CarBooking), () => {
+    return pendingBookings.values();
   }),
 
   // return a particular car
@@ -196,6 +211,178 @@ export default Canister({
     const deletedCarOpt = carStorage.remove(id);
 
     return Ok(deletedCarOpt.Some.id);
+  }),
+
+  // create order for car reservation
+  createReservationOrder: update(
+    [text, nat64],
+    Result(CarBooking, Message),
+    (id, noOfCars) => {
+      const carOpt = carStorage.get(id);
+      if ("None" in carOpt) {
+        return Err({
+          NotFound: `cannot create the booking: carOpt=${id} not found`,
+        });
+      }
+
+      if ("None" in reservationFee) {
+        return Err({
+          NotFound: "reservation fee not set",
+        });
+      }
+
+      const car = carOpt.Some;
+
+      if (car.isReserved) {
+        return Err({
+          Booked: `car with id ${id} is currently booked`,
+        });
+      }
+
+      // calculate total amount to be spent plus reservation fee
+      let amountToBePaid = noOfCars * car.price + reservationFee.Some;
+
+      // generate order
+      const booking = {
+        carId: car.id,
+        amount: amountToBePaid,
+        noOfCars,
+        status: { PaymentPending: "PAYMENT_PENDING" },
+        payer: ic.caller(),
+        paid_at_block: None,
+        memo: generateCorrelationId(id),
+      };
+
+      pendingBookings.insert(booking.memo, booking);
+
+      discardByTimeout(booking.memo, ORDER_RESERVATION_PERIOD);
+
+      return Ok(booking);
+    }
+  ),
+
+  // complete car reservation
+  completeReservation: update(
+    [text, nat64, nat64, nat64],
+    Result(CarBooking, Message),
+    async (id, noOfCars, block, memo) => {
+      // get car
+      const carOpt = carStorage.get(id);
+      if ("None" in carOpt) {
+        throw Error(`car with id=${id} not found`);
+      }
+
+      const car = carOpt.Some;
+
+      // check reservation fee is set
+      if ("None" in reservationFee) {
+        return Err({
+          NotFound: "reservation fee not set",
+        });
+      }
+
+      // calculate total amount to be spent plus reservation fee
+      let amount = noOfCars * car.price + reservationFee.Some;
+
+      // check payments
+      const paymentVerified = await verifyPaymentInternal(
+        ic.caller(),
+        amount,
+        block,
+        memo
+      );
+
+      if (!paymentVerified) {
+        return Err({
+          NotFound: `cannot complete the purchase: cannot verify the payment, memo=${memo}`,
+        });
+      }
+
+      const pendingBookingOpt = pendingBookings.remove(memo);
+      if ("None" in pendingBookingOpt) {
+        return Err({
+          NotFound: `cannot complete the purchase: there is no pending booking with id=${id}`,
+        });
+      }
+
+      const booking = pendingBookingOpt.Some;
+      const updatedBooking = {
+        ...booking,
+        status: { Completed: "COMPLETED" },
+        paid_at_block: Some(block),
+      };
+
+      let durationInMins = BigInt(60 * 1000000000);
+
+      // get updated record
+      const updatedCar = {
+        ...car,
+        currentReservedTo: Some(ic.caller()),
+        isReserved: true,
+        currentReservationEnds: Some(ic.time() + durationInMins),
+      };
+
+      carStorage.insert(car.id, updatedCar);
+      persistedBookings.insert(ic.caller(), updatedBooking);
+      return Ok(updatedBooking);
+    }
+  ),
+
+  // end reservation and receive your refund
+  // complete car reservation
+  endReservation: update([text], Result(Message, Message), async (id) => {
+    // get car
+    const carOpt = carStorage.get(id);
+    if ("None" in carOpt) {
+      return Err({ NotFound: `car with id=${id} not found` });
+    }
+
+    const car = carOpt.Some;
+
+    if (!car.isReserved) {
+      return Err({ NotBooked: "car is not reserved" });
+    }
+
+    if ("None" in car.currentReservationEnds) {
+      return Err({ NotBooked: "reservation time not set" });
+    }
+
+    if (car.currentReservationEnds.Some > ic.time()) {
+      return Err({ Booked: "booking time not yet over" });
+    }
+
+    if ("None" in car.currentReservedTo) {
+      return Err({ NotBooked: "car not reserved to anyone" });
+    }
+
+    if (car.currentReservedTo.Some.toString() !== ic.caller().toString()) {
+      return Err({ Booked: "only booker of car can unbook" });
+    }
+
+    // check reservation fee is set
+    if ("None" in reservationFee) {
+      return Err({
+        NotFound: "reservation fee not set",
+      });
+    }
+
+    const result = await makePayment(ic.caller(), reservationFee.Some);
+
+    if ("Err" in result) {
+      return result;
+    }
+
+    // get updated record
+    const updatedCar = {
+      ...car,
+      currentReservedTo: None,
+      isReserved: false,
+      currentReservationEnds: None,
+    };
+
+    carStorage.insert(car.id, updatedCar);
+
+    return result;
   }),
 
   // a helper function to get canister address from the principal
@@ -310,6 +497,9 @@ async function verifyPaymentInternal(
   return tx ? true : false;
 }
 
+function discardByTimeout(memo: nat64, ORDER_RESERVATION_PERIOD: bigint) {
+  throw new Error("Function not implemented.");
+}
 //   // Add function to sell a car
 // sellCar: update([text, Principal], Result(Car, Message), async (id, buyer) => {
 //   const carOpt = carStorage.get(id);
