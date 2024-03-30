@@ -14,7 +14,7 @@
     "start": "webpack serve --mode development --env development",
     "deploy-ledger": "./scripts/deploy-local-ledger.sh",
     "deploy-identity": "dfx deploy internet_identity --specified-id rdmx6-jaaaa-aaaaa-aaadq-cai",
-    "deploy-backend": "dfx deploy dfinity_js_backend --argument '(record {reservationFee = 2_0000_0000})'",
+    "deploy-backend": "dfx deploy dfinity_js_backend --specified-id be2us-64aaa-aaaaa-qaabq-cai --argument '(record {reservationFee = 2_0000_0000})'",
     "deploy-frontend": "dfx deploy dfinity_js_frontend",
     "mint-tokens": "./scripts/mint-tokens.sh"
   },

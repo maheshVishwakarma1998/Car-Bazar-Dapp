@@ -25,9 +25,7 @@
       "gzip": true
     },
     "dfinity_js_frontend": {
-      "dependencies": [
-        "dfinity_js_backend"
-      ],
+      "dependencies": ["dfinity_js_backend"],
       "frontend": {
         "entrypoint": "src/dfinity_js_frontend/src/index.html"
       },
@@ -46,5 +44,11 @@
     }
   },
   "output_env_file": ".env",
-  "version": 1
+  "version": 1,
+  "networks": {
+    "local": {
+      "bind": "localhost:8080",
+      "type": "ephemeral"
+    }
+  }
 }

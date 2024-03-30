@@ -3,7 +3,7 @@ import { Container, Nav } from "react-bootstrap";
 import "./App.css"; // Assuming this file contains necessary CSS adjustments
 import Wallet from "./components/Wallet";
 import coverImg from "./assets/img/car.jpg";
-import bgImage from "./assets/img/background.png"; // Import the correct image
+import bgImage from "./assets/img/background.jpg"; // Import the correct image
 import { login, logout as destroy } from "./utils/auth";
 import { getDfxAddress, balance as principalBalance } from "./utils/ledger";
 import Cover from "./components/utils/Cover";
