@@ -10,12 +10,29 @@ const addCar = ({ createNewCar, loading }) => {
   const [imageUrl, setImage] = useState("");
   const [model, setModel] = useState("");
   const [price, setPrice] = useState(0);
-  const [companyName, setCompanyName] = useState("");
+  const [cubicCapacityOfEngine, setCubicCapacityOfEngine] = useState("");
   const [topSpeed, setTopSpeed] = useState(0);
+  const [companyName, setCompanyName] = useState("");
 
   const isFormFilled = useCallback(() => {
-    return name && imageUrl && model && companyName && topSpeed && price > 0;
-  }, [name, imageUrl, model, companyName, topSpeed, price]);
+    return (
+      name &&
+      imageUrl &&
+      model &&
+      cubicCapacityOfEngine &&
+      companyName &&
+      topSpeed &&
+      price > 0
+    );
+  }, [
+    name,
+    imageUrl,
+    model,
+    price,
+    cubicCapacityOfEngine,
+    topSpeed,
+    companyName,
+  ]);
 
   const [show, setShow] = useState(false);
 
@@ -45,10 +62,8 @@ const addCar = ({ createNewCar, loading }) => {
             >
               <Form.Control
                 type="text"
-                onChange={(e) => {
-                  setName(e.target.value);
-                }}
-                placeholder="Enter Car name"
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter car name"
               />
             </FloatingLabel>
             <FloatingLabel
@@ -60,9 +75,7 @@ const addCar = ({ createNewCar, loading }) => {
                 type="text"
                 placeholder="Image URL"
                 value={imageUrl}
-                onChange={(e) => {
-                  setImage(e.target.value);
-                }}
+                onChange={(e) => setImage(e.target.value)}
               />
             </FloatingLabel>
             <FloatingLabel
@@ -71,56 +84,58 @@ const addCar = ({ createNewCar, loading }) => {
               className="mb-3"
             >
               <Form.Control
-                as="textarea"
-                placeholder="model"
-                style={{ height: "80px" }}
-                max={115}
-                onChange={(e) => {
-                  setDescription(e.target.value);
-                }}
-              />
-            </FloatingLabel>
-            <FloatingLabel
-              controlId="inputCompanyName"
-              label="CompanyName"
-              className="mb-3"
-            >
-              <Form.Control
-                as="textarea"
-                placeholder="companyName"
-                style={{ height: "80px" }}
-                max={115}
-                onChange={(e) => {
-                  setDescription(e.target.value);
-                }}
-              />
-            </FloatingLabel>
-            <FloatingLabel
-              controlId="inputTopSpeed"
-              label="TopSpeed"
-              className="mb-3"
-            >
-              <Form.Control
-                as="textarea"
-                placeholder="topSpeed"
-                style={{ height: "80px" }}
-                max={115}
-                onChange={(e) => {
-                  setDescription(e.target.value);
-                }}
+                type="text"
+                placeholder="Model"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
               />
             </FloatingLabel>
             <FloatingLabel
               controlId="inputPrice"
-              label="Price Per Car in ICP"
+              label="Price"
+              className="mb-3"
+            >
+              <Form.Control
+                type="number"
+                placeholder="Price"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+            </FloatingLabel>
+            <FloatingLabel
+              controlId="inputCubicCapacity"
+              label="Cubic Capacity of Engine"
               className="mb-3"
             >
               <Form.Control
                 type="text"
-                placeholder="Price"
-                onChange={(e) => {
-                  setPrice(e.target.value);
-                }}
+                placeholder="Cubic Capacity"
+                value={cubicCapacityOfEngine}
+                onChange={(e) => setCubicCapacityOfEngine(e.target.value)}
+              />
+            </FloatingLabel>
+            <FloatingLabel
+              controlId="inputTopSpeed"
+              label="Top Speed"
+              className="mb-3"
+            >
+              <Form.Control
+                type="text"
+                placeholder="Top Speed"
+                value={topSpeed}
+                onChange={(e) => setTopSpeed(e.target.value)}
+              />
+            </FloatingLabel>
+            <FloatingLabel
+              controlId="inputCompanyName"
+              label="Company Name"
+              className="mb-3"
+            >
+              <Form.Control
+                type="text"
+                placeholder="Company Name"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
               />
             </FloatingLabel>
           </Modal.Body>
@@ -138,6 +153,9 @@ const addCar = ({ createNewCar, loading }) => {
                 imageUrl,
                 model,
                 price,
+                cubicCapacityOfEngine,
+                topSpeed,
+                companyName,
               });
               handleClose();
             }}

@@ -25,8 +25,9 @@ const Car = ({ car, makeReservation, endReservation, deleteCar }) => {
     imageUrl,
     model,
     price,
-    companyName,
+    cubicCapacityOfEngine,
     toSpeed,
+    companyName,
     currentReservedTo,
     currentReservationEnds,
     isReserved,
@@ -71,7 +72,18 @@ const Car = ({ car, makeReservation, endReservation, deleteCar }) => {
         </div>
         <Card.Body className="d-flex flex-column text-center">
           <Card.Title>{name}</Card.Title>
-          <Card.Text className="flex-grow-1">{model}</Card.Text>
+          <Card.Text className="flex-grow-1">
+            Model : {model}
+            </Card.Text>
+          <Card.Text className="flex-grow-1">
+            company Name : {companyName}
+            </Card.Text>
+          <Card.Text className="flex-grow-1">
+            Top Speed : {toSpeed}
+            </Card.Text>
+          <Card.Text className="flex-grow-1">
+          CubicCapacityOfEngine : {cubicCapacityOfEngine}
+            </Card.Text>
           <Card.Text className="flex-grow-1">
             {currentReservationEnds.length > 0
               ? `Reservation ends: ${convertTime(currentReservationEnds[0])}`
@@ -112,7 +124,7 @@ const Car = ({ car, makeReservation, endReservation, deleteCar }) => {
                     min="1"
                     disabled={isReserved || isCreator()}
                     onChange={(e) => {
-                      setNoOfPersons(Number(e.target.value));
+                      setNoOfCars(Number(e.target.value));
                     }}
                   />
                 </FloatingLabel>

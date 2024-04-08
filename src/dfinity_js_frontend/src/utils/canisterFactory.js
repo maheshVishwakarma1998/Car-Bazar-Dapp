@@ -2,7 +2,7 @@ import { HttpAgent, Actor } from "@dfinity/agent";
 import { idlFactory as carIDL } from "../../../declarations/dfinity_js_backend/dfinity_js_backend.did.js";
 import { idlFactory as ledgerIDL } from "../../../declarations/ledger_canister/ledger_canister.did.js";
 
-const CAR_CANISTER_ID = "be2us-64aaa-aaaaa-qaabq-cai";
+const CAR_CANISTER_ID = "bkyz2-fmaaa-aaaaa-qaaaq-cai";
 const LEDGER_CANISTER_ID = "ryjl3-tyaaa-aaaaa-aaaba-cai";
 const HOST = "http://localhost:8080";
 

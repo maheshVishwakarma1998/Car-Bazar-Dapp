@@ -62,7 +62,19 @@ const Cars = ({ fetchBalance }) => {
     setLoading(true);
     const priceStr = data.price;
     data.price = parseInt(priceStr, 10) * 10 ** 8;
-    addCar(data)
+
+    let arg = {
+      name: data.name,
+      imageUrl: data.imageUrl,
+      model: data.model,
+      price: BigInt(data.price),
+      cubicCapacityOfEngine: data.cubicCapacityOfEngine,
+      topSpeed: data.topSpeed,
+      companyName: data.companyName,
+      
+    };
+
+    addCar(arg)
       .then(() => {
         toast(<NotificationSuccess text="Car added successfully." />);
         getCars();
@@ -126,12 +138,12 @@ const Cars = ({ fetchBalance }) => {
   return (
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h1 className="fs-4 fw-bold mb-0 text-light">
+        <h1 className="fs-4 fw-bold mb-0 custom-dark-text">
           Best Deals With Cars{" "}
         </h1>
         <AddCar createNewCar={createNewCar} />
       </div>
-      <div className="mb-3 text-light">
+      <div className="mb-3 custom-dark-text">
         <i className="bi bi-bell-fill"></i> Holding fee for any reservation is{" "}
         {formatE8s(reservationFee)} ICP.
       </div>

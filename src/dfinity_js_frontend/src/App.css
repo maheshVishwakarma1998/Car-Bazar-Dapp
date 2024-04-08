@@ -11,8 +11,13 @@
   height: 80vh !important;
 }
 
+.custom-dark-text {
+  color: #212529; /* or any other dark color code */
+}
+
+
 .my-background-image {
-  background-image: url("./assets/img/background.jpg");
+  background-image: url("./assets/img/car3.jpg");
   background-repeat: no-repeat; /* Control image repetition */
   background-size: cover; /* Adjust image size */
   height: 400px; /* Optional: Set component height */

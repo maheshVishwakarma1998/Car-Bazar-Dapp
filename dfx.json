@@ -22,6 +22,7 @@
       "candid": "src/dfinity_js_backend/src/index.did",
       "build": "npx azle dfinity_js_backend",
       "wasm": ".azle/dfinity_js_backend/dfinity_js_backend.wasm",
+      "specified_id": "bkyz2-fmaaa-aaaaa-qaaaq-cai",
       "gzip": true
     },
     "dfinity_js_frontend": {
